@@ -15,6 +15,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields="username", message="Username already taken")
  * @UniqueEntity(fields="email", message="Email already taken")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\AttributeOverrides({
+ *      @ORM\AttributeOverride(name="email", column=@ORM\Column(type="string", name="email", length=255, unique=false, nullable=true)),
+ *      @ORM\AttributeOverride(name="emailCanonical", column=@ORM\Column(type="string", name="email_canonical", length=255, unique=false, nullable=true))
+ * })
  */
 class User extends BaseUser
 {
@@ -230,7 +234,6 @@ class User extends BaseUser
         $this->updatedAt = $updatedAt;
         return $this;
     }
-
 
 
     /**
@@ -455,7 +458,7 @@ class User extends BaseUser
      //   $this->active = true;
         $this->createdAt = new \DateTime('now');
         $this->updatedAt = new \DateTime('now');
-    //    $this->level = 1;
+        $this->addRole('ROLE_USER');
         $this->correct = 0;
         $this->incorrect = 0;
         $this->testsTaken = 0;
@@ -504,7 +507,17 @@ class User extends BaseUser
      */
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        return $this->roles;
+    }
+
+    public function addRole($role)
+    {
+        $this->roles[] = $role;
+    }
+
+    public function setRoles(array $roles)
+    {
+        $this->roles = $roles;
     }
 
     /**

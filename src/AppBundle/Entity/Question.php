@@ -90,7 +90,7 @@ class Question
     private $created_by;
 
     /**
-     * @ORM\Column(type="string", columnDefinition="ENUM('Submitted', 'Approved', 'Denied', 'Added')")
+     * @ORM\Column(type="string", columnDefinition="ENUM('Submitted', 'Added', 'Denied')")
      */
     private $status;
 
@@ -98,7 +98,8 @@ class Question
     public function __construct()
     {
         $this->answers = new ArrayCollection();
-        $this->status = 'Submitted';
+        $this->reports = new ArrayCollection();
+        $this->status  = 'Submitted';
     }
 
     public function addAnswer(Answer $answer)
@@ -111,7 +112,9 @@ class Question
 
     public function removeAnswer(Answer $answer)
     {
-        $this->answers->removeElement($answer);
+        if ($this->answers->contains($answer)) {
+            $this->answers->removeElement($answer);
+        }
         return $this;
     }
     /**
@@ -357,6 +360,10 @@ class Question
         return $this;
     }
 
+    public function __toString()
+    {
+        return $this->id.'. '.$this->title;
+    }
 
 
     public function slugify()

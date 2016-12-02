@@ -42,3 +42,8 @@ facebook_login:
 
 google_login:
     path: /login/check-google
+
+easy_admin_bundle:
+    resource: "@AppBundle/Controller/AdminController.php"
+    type:     annotation
+    prefix:   /admin

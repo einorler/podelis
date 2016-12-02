@@ -58,11 +58,13 @@ class TestController extends Controller
     public function quickTestAction()
     {
         $qRepository = $this->getDoctrine()->getRepository('AppBundle:Question');
-        $questions = $qRepository->getRandomQuestions(10);
+        $questions = $qRepository->getRandomQuestions(20);
 
-        $this->get('app.test_starter')->startTest($questions, '+2 minutes', false);
-
-        return $this->redirectToRoute('question', ['id' => $questions[0][0]->getId()]);
+        if (!empty($questions[0][0])) {
+            $this->get('app.test_starter')->startTest($questions, '+2 minute,', true);
+            return $this->redirectToRoute('question', ['id' => $questions[0][0]->getId()]);
+        }
+        return $this->render('@App/Home/404.html.twig');
     }
 
     /**
@@ -83,8 +85,8 @@ class TestController extends Controller
     public function categoryTestAction1($id)
     {
         $questions = $this->getDoctrine()->getRepository('AppBundle:Question')->getCategoryQuestions($id);
-        if($questions)
-        {
+
+        if (!empty($questions[0][0])) {
             $this->get('app.test_starter')->startTest($questions, '+1 minute,', true);
             return $this->redirectToRoute('question', ['id' => $questions[0][0]->getId()]);
         }
@@ -232,16 +234,15 @@ class TestController extends Controller
         $report = new QuestionReport();
         $form = $this->createForm(QuestionReportType::class, $report);
 
-        if(!$request->isXmlHttpRequest() && !$allow){
+        if (!$request->isXmlHttpRequest() && !$allow) {
             return new Response();
         }
 
-        if($request->isXmlHttpRequest() && $request->isMethod('POST'))
-        {
+        if ($request->isXmlHttpRequest() && $request->isMethod('POST')) {
             $form->handleRequest($request);
             $response = new JsonResponse();
 
-            if($form->isSubmitted() && $form->isValid()){
+            if ($form->isSubmitted() && $form->isValid()) {
 
                 $question = $this->getDoctrine()
                     ->getRepository('AppBundle:Question')
@@ -251,13 +252,14 @@ class TestController extends Controller
                     ->setQuestionId($question)
                     ->setCreatedAt(new \DateTime())
                     ->setUpdatedAt(new \DateTime());
+
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($report);
                 $em->flush();
 
                 $response->setStatusCode(200, 'success');
 
-            } else{
+            } else {
                 $response->setStatusCode(400, 'error');
             }
             return $response;

@@ -10,4 +10,32 @@ namespace AppBundle\Repository;
  */
 class TestRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function bestResultFromEachCategory($userId)
+    {
+        return $this->createQueryBuilder('t')
+            ->select('FIRST(t)')
+            ->where('t.userId = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('t.category')
+            ->orderBy('t.correct', 'DESC')
+            ->distinct()
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    public function categoryResults($userId, $category)
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t')
+            ->where('t.userId = :userId')
+            ->andWhere('t.category = :category')
+            ->setParameter('category', $category)
+            ->setParameter('userId', $userId)
+            ->groupBy('t.category')
+            ->orderBy('t.correct', 'desc')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

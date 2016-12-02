@@ -1,0 +1,36 @@
+{% extends '@EasyAdmin/default/layout.html.twig' %}
+            {% block header %}
+                <nav class="navbar" role="navigation">
+                    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                        <span class="sr-only">{{ 'toggle_navigation'|trans(domain = 'EasyAdminBundle') }}</span>
+                    </a>
+
+                    <div id="header-logo">
+                        {% block header_logo %}
+                            <a class="logo {{ easyadmin_config('site_name')|length > 14 ? 'logo-long' }}"
+                               title="{{ easyadmin_config('site_name')|striptags }}" href="{{ path('easyadmin') }}">
+                                {{ easyadmin_config('site_name')|raw }}
+                            </a>
+                        {% endblock header_logo %}
+                    </div>
+
+                    <div class="navbar-custom-menu">
+                        {% block header_custom_menu %}
+                            <a href="{{ path('homepage') }}">Back to site</a>
+                            <ul class="nav navbar-nav">
+                                <li class="user user-menu">
+                                    {% block user_menu %}
+                                        <span class="sr-only">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</span>
+                                        <i class="hidden-xs fa fa-user"></i>
+                                        {% if app.user|default %}
+                                            {{ app.user.username|default('user.unnamed'|trans(domain = 'EasyAdminBundle')) }}
+                                        {% else %}
+                                            {{ 'user.anonymous'|trans(domain = 'EasyAdminBundle') }}
+                                        {% endif %}
+                                    {% endblock user_menu %}
+                                </li>
+                            </ul>
+                        {% endblock header_custom_menu %}
+                    </div>
+                </nav>
+            {% endblock header %}

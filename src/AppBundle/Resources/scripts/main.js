@@ -126,8 +126,8 @@ function solveIt(reqPath, questionId, inputElement, explanationEl) {
 
 function reportQuestion(form, url, questionId) {
 
-    form.submit(function(e){
-        $('#submitReport').attr('disabled', true);
+    form.one('submit', function(e){
+
         e.preventDefault();
         var formSerialize = $(this).serialize() + "&questionId=" + questionId;
 
@@ -142,6 +142,7 @@ function reportQuestion(form, url, questionId) {
                      .attr('value', 'Report submitted!')
                      .trigger("click")
                      .attr('disabled', true);
+                $('#submitReport').attr('disabled', true);
 
             },
             error: function () {
@@ -211,5 +212,32 @@ function addAnswerForm($collectionHolder, $newLinkLi) {
             $('.remove-tag').attr('disabled', true);
         }
         return false;
+    });
+}
+
+function deleteRecord(url, entity) {
+    $('#removeModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var name = button.data('name');
+        var modal = $(this);
+
+        modal.find('.modal-body').text('Question: ' + name);
+        $('#delete').one('click', function () {
+
+            // $('#delete').attr('disabled', true);
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: 'repository=' + entity + '&id=' + id,
+                success: function () {
+                    button.trigger("click");
+//                    button.parent().parent().hide();
+                },
+                error: function () {
+                    button.trigger("click");
+                }
+            })
+        });
     });
 }

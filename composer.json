@@ -26,7 +26,8 @@
         "symfony/assetic-bundle": "^2.8",
         "hwi/oauth-bundle": "^0.5.1",
         "codeception/codeception": "^2.2",
-        "friendsofsymfony/user-bundle": "^2.0"
+        "friendsofsymfony/user-bundle": "^2.0@dev",
+        "javiereguiluz/easyadmin-bundle": "^1.16"
     },
     "require-dev": {
         "fzaninotto/faker": "*",

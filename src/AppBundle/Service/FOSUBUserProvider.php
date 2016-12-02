@@ -53,18 +53,21 @@ class FOSUBUserProvider extends BaseClass
             $setter_id = $setter.'Id';
             $setter_token = $setter.'AccessToken';
 
-            //dump($response);
-
             $user = new User();
             $user->$setter_id($username)
                 ->$setter_token($response->getAccessToken())
-                ->setAvatar($response->getProfilePicture())
                 ->setUsername($response->getUsername())
-                ->setEmail($response->getUsername())
+                ->setEmail($response->getEmail())
                 ->setPassword(md5((uniqid())))
                 ->setEnabled(true)
                 ->setName($response->getFirstName())
                 ->setSurname($response->getLastName());
+            
+            if ($service === 'facebook') {
+                $user->setAvatar('https://graph.facebook.com/'.$user->getUsername().'/picture?type=large');
+            } else {
+                $user->setAvatar($response->getProfilePicture());
+            }
 
             $this->userManager->updateUser($user);
             return $user;

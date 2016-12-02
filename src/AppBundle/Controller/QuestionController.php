@@ -65,22 +65,29 @@ class QuestionController extends Controller
      * @Route("/delete", name="delete")
      * @Security("has_role('ROLE_USER')")
      */
-    public function deletePanelAction(Request $request)
+    public function deleteAction(Request $request)
     {
         if ($request->isXmlHttpRequest()) {
-            $entity = $request->request->get('entity');
+            $repository = $request->request->get('repository');
             $id = $request->get('id');
 
-            if ($entity == 'question')
-                $this->deleteAction('AppBundle:Question', $id);
-            else if ($entity == 'report')
-                $this->deleteAction('AppBundle:QuestionReport', $id);
-            else
-                return new JsonResponse(400, 'error');
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('AppBundle:' . $repository)
+                ->findOneBy(['id' => $id, 'created_by' => $this->getUser()->getId()]);
+            $response = new JsonResponse();
+
+            if ($entity) {
+                $em->remove($entity);
+                $em->flush();
+
+                $response->setStatusCode(200, 'success');
+            } else {
+                $response->setStatusCode(400, 'error');
+            }
+            return $response;
         }
         return new Response();
     }
-
 
     /**
      * @Route("/edit-question/{id}-{slug}", name="editQuestion")
@@ -156,19 +163,4 @@ class QuestionController extends Controller
         return $this->render('AppBundle:Home:404.html.twig');
     }
 
-    public function deleteAction($repository, $id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository($repository)
-            ->findOneBy(['id' => $id, 'created_by' => $this->getUser()->getId()]);
-
-        if ($entity) {
-            $em->remove($entity);
-            $em->flush();
-
-            return new JsonResponse(200, 'success');
-        } else {
-            return new JsonResponse(400, 'error');
-        }
-    }
 }
