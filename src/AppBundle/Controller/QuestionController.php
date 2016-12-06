@@ -26,7 +26,6 @@ class QuestionController extends Controller
      */
     public function addQuestionAction(Request $request)
     {
-        // test comment
         $question = new Question();
         $question->prepareAnswerFields(4);
         $form = $this->createForm(QuestionType::class, $question);
